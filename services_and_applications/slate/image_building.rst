@@ -21,7 +21,7 @@ on docker builds `can be found here <https://docs.docker.com/engine/reference/co
 S2I
 ^^^
 
-Source to image is a tool to build docker formatted container images. This is accomplished by injecting source code
+Source to image (S2I) is a tool to build docker formatted container images. This is accomplished by injecting source code
 into a container image and then building a new image. The new image will contain the source code ready to run,
 via the ``$ docker run`` command inside the newly built image. 
 
@@ -168,7 +168,7 @@ be used by passing the ``--from-dir`` flag to the ``start-build`` command like s
      Uploading directory "sampledir" as binary input for the build ...
      build "django-5" started
 
-Using a local image
+Using a Local Image
 ^^^^^^^^^^^^^^^^^^^
 
 There might be an image built locally that you would like to have in your OpenShift project. It is possible to add this 
@@ -210,7 +210,7 @@ Lastly, the image needs to be pushed to the registry.
 OpenShift has an integrated container registry that can be accessed from outside the cluster to
 push and pull images as well as run containers.
 
-Logging into the registry externally
+Logging into the Registry Externally
 ------------------------------------
 
 .. note::

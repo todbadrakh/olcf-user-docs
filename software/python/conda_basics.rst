@@ -6,29 +6,19 @@ Conda Basics
 Overview
 ========
 
-This guide introduces a user to the basic workflow of using conda environments, as well as providing an example of how to create a conda environment that uses a different version of Python than the base environment uses on Summit.
-Although Summit is being used in this guide, all of the concepts still apply to other OLCF systems.
+This guide introduces a user to the basic workflow of using conda environments, as well as providing an example of how to create a conda environment that uses a different version of Python than the base environment.
 
 OLCF Systems this guide applies to: 
 
-* Summit
-* Andes
-* Frontier
+* :doc:`Andes </systems/andes_user_guide>`
+* :doc:`Frontier </systems/frontier_user_guide>`
 
-Inspecting and setting up an environment
+Inspecting and Setting Up an Environment
 ========================================
 
 First, load the python module and the gnu compiler module (most Python packages assume use of GCC)
 
 .. tab-set::
-
-   .. tab-item:: Summit
-      :sync: summit
-
-      .. code-block:: bash
-
-         $ module load gcc/12.1.0
-         $ module load miniforge3/24.3.0-0
 
    .. tab-item:: Andes
       :sync: andes
@@ -43,7 +33,7 @@ First, load the python module and the gnu compiler module (most Python packages 
 
       .. code-block:: bash
 
-         $ module load PrgEnv-gnu/8.5.0
+         $ module load PrgEnv-gnu/8.6.0
          $ module load miniforge3/23.11.0-0
 
 
@@ -56,7 +46,7 @@ To see a list of environments, use the command ``conda env list``:
 
    # conda environments:
    #
-   base                  *  /sw/summit/miniforge3/24.3.0-0
+   base                  *  /sw/frontier/miniforge3/24.3.0-0
 
 This also is a great way to keep track of the locations and names of all other environments that have been created.
 The current environment is indicated by ``*``.
@@ -67,7 +57,7 @@ To see what packages are installed in the active environment, use ``conda list``
 
    $ conda list
 
-   # packages in environment at /sw/summit/miniforge3/24.3.0-0:
+   # packages in environment at /sw/frontier/miniforge3/24.3.0-0:
    #
    # Name                    Version                   Build  Channel
    _libgcc_mutex             0.1                 conda_forge    conda-forge
@@ -94,7 +84,7 @@ You can find the version of Python that exists in this base environment by execu
 .. note::
    Although the base environment is ``3.10.13``, you are **NOT** limited to this version in any subsequent conda environments. I.e., you can install other Python versions in new conda environments.
 
-Creating a new environment
+Creating a New Environment
 ==========================
 
 For this guide, you are going to install a different version of Python.
@@ -104,7 +94,7 @@ As an example, let's create an environment in the NFS "project home" space:
 
 .. code-block:: bash
 
-   $ conda create -p /ccs/proj/<project_id>/<username>/envs/summit/py311-summit python=3.11.0
+   $ conda create -p /ccs/proj/<project_id>/<username>/envs/frontier/py311-frontier python=3.11.0
 
 The ``-p`` flag specifies the desired path and name of your new virtual environment.
 The directory structure is case sensitive, so be sure to insert ``<project_id>`` as lowercase.
@@ -122,18 +112,18 @@ Downloads of the fresh packages will start and eventually you should see somethi
    #
    # To activate this environment, use
    #
-   #     $ conda activate /ccs/proj/<project_id>/<username>/envs/summit/py311-summit
+   #     $ conda activate /ccs/proj/<project_id>/<username>/envs/frontier/py311-frontier
    #
    # To deactivate an active environment, use
    #
    #     $ conda deactivate
 
-Due to the specific nature of conda on Summit, you must use ``source activate`` and ``source deactivate`` instead of ``conda activate`` and ``conda deactivate``.
+Due to the specific nature of conda at OLCF (multiple systems where conda installations can clash), you must use ``source activate`` and ``source deactivate`` instead of ``conda activate`` and ``conda deactivate``.
 Let's activate the new environment:
 
 .. code-block:: bash
 
-   $ source activate /ccs/proj/<project_id>/<username>/envs/summit/py311-summit
+   $ source activate /ccs/proj/<project_id>/<username>/envs/frontier/py311-frontier
 
 The path to the environment should now be displayed in "( )" at the beginning of your terminal lines, which indicate that you are currently using that specific conda environment.
 And if you check with ``conda env list`` again, you should see that the ``*`` marker has moved to your newly activated environment:
@@ -144,10 +134,10 @@ And if you check with ``conda env list`` again, you should see that the ``*`` ma
 
    # conda environments:
    #
-                         *  /ccs/proj/<project_id>/<username>/envs/summit/py311-summit
-   base                     /sw/summit/python/3.8/anaconda3/2020.07-rhel8
+                         *  /ccs/proj/<project_id>/<username>/envs/frontier/py311-frontier
+   base                     /sw/frontier/...
 
-Installing packages
+Installing Packages
 ===================
 
 Next, let's install a package (`NumPy <https://numpy.org/>`__). 
@@ -181,7 +171,7 @@ Let's install a more optimized version using a different method instead, but fir
 
    $ pip uninstall numpy
 
-Installing with conda commands
+Installing with Conda Commands
 ------------------------------
 
 The traditional, and more basic, approach to installing/uninstalling packages into a conda environment is to use the commands ``conda install`` and ``conda remove``.
@@ -194,7 +184,7 @@ Let's do this to install NumPy:
 Because NumPy depends on other packages for optimization, this will also install all of its dependencies.
 You have just installed an optimized version of NumPy, now let's test it.
 
-Testing your new environment
+Testing Your New Environment
 ============================
 
 Let's run a test to make sure everything installed properly.
@@ -224,19 +214,19 @@ Make sure you're in a Python shell first, then print out the versions of Python 
 Additional Tips
 ===============
 
-* Cloning the base environment:
+* **Cloning the base environment**:
 
     It is not recommended to try to install new packages into the base environment.
     Instead, you can clone the base environment for yourself and install packages into the clone.
     To clone an environment, you must use the ``--clone <env_to_clone>`` flag when creating a new conda environment.
-    An example for cloning the base environment into your Project Home directory on Summit is provided below:
+    An example for cloning the base environment into your Project Home directory on NFS is provided below:
 
     .. code-block:: bash
 
-       $ conda create -p /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/summit/baseclone-summit --clone base
-       $ source activate /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/summit/baseclone-summit
+       $ conda create -p /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/frontier/baseclone-frontier --clone base
+       $ source activate /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/frontier/baseclone-frontier
 
-* Adding known environment locations:
+* **Adding known environment locations**:
 
     For a conda environment to be callable by a "name", it must be installed in one of the ``envs_dirs`` directories.
     The list of known directories can be seen by executing:
@@ -248,17 +238,17 @@ Additional Tips
     On OLCF systems, the default location is your ``$HOME`` directory.
     If you plan to frequently create environments in a different location other than the default (such as ``/ccs/proj/...``), then there is an option to add directories to the ``envs_dirs`` list.
 
-    For example, to track conda environments in a subdirectory called ``summit`` in Project Home you would execute:
+    For example, to track conda environments in a subdirectory called ``frontier`` in Project Home you would execute:
 
     .. code-block:: bash
 
-       $ conda config --append envs_dirs /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/summit
+       $ conda config --append envs_dirs /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/frontier
 
     This will create a ``.condarc`` file in your ``$HOME`` directory if you do not have one already, which will now contain this new envs_dirs location.
-    This will now enable you to use the ``--name env_name`` flag when using conda commands for environments stored in the ``summit`` directory, instead of having to use the ``-p /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/summit/env_name`` flag and specifying the full path to the environment.
-    For example, you can do ``source activate py3711-summit`` instead of ``source activate /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/summit/py3711-summit``.
+    This will now enable you to use the ``--name env_name`` flag when using conda commands for environments stored in the ``frontier`` directory, instead of having to use the ``-p /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/frontier/env_name`` flag and specifying the full path to the environment.
+    For example, you can do ``source activate py3711-frontier`` instead of ``source activate /ccs/proj/<YOUR_PROJECT_ID>/<YOUR_USER_ID>/envs/frontier/py3711-frontier``.
 
-* Exporting (sharing) an environment:
+* **Exporting (sharing) an environment**:
 
     You may want to share your environment with someone else.
     One way to do this is by creating your environment in a shared location where other users can access it.

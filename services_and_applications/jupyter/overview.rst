@@ -42,9 +42,10 @@ The above links will present you with a page similar to below.
 .. image:: /images/jupyter/login.png
 
 
-After succesfull authentication you will be presented with a choice of JupyterLab images (similar to the image below):
+After successful authentication you will be presented with a choice of JupyterLab images (similar to the image below if you are using the Moderate JupyterHub):
 
-- CPU-Only Lab
+- CPU-Only Orion/Filesystem Heavy Workload Lab
+- CPU-Only Compute Heavy Workload Lab
 - GPU-Lab (currently only available to Moderate Security Enclave projects)
 
 
@@ -52,14 +53,19 @@ After succesfull authentication you will be presented with a choice of JupyterLa
   These GPU-enabled labs are limited. You may get get a message saying the resource is not schedulable, if all GPUs in the pool are occupied.
 
 
-.. image:: /images/jupyter/jupyterlab_images.png
+.. image:: /images/jupyter/jupyterlab_images2.png
+   :scale: 70%
+   :align: center
 
 **Select the lab you would like and click "Start".**
 
-The CPU Lab provides a single default notebook/environment in the "launcher" page of the Jupyterlab interface.
-The GPU Lab provides options for CUDA 10 and CUDA 11 environments.
+.. tip::
+   You may only have one JupyterLab session running at a time. If you would like to switch between CPU labs and/or the GPU lab, you will need to stop your current JupyterLab session first (e.g., `File >> Hub Control Panel >> Stop My Server >> Start My Server`).
 
-You can read about the environments more, below, in the "Conda Environments" section. In addtion, that section will show you how to create your own Conda Environments.
+The CPU Labs provide a single default notebook/environment in the "launcher" page of the JupyterLab interface, and
+the GPU Lab provides a default CUDA 12 environment.
+
+You can read more about the environments, and how to create your own Conda environment, in the :ref:`conda-environments` section.
 
 Once inside the JupyterLab, please take a moment to explore the interface.
 
@@ -76,17 +82,22 @@ Hardware Resources
 
   .. tab-item:: Moderate JupyterHub
 
-      Each CPU Lab spawned by OLCF's Moderate JupyterHub gets these default resources:
+      The **Orion/Filesystem CPU Lab** spawned by OLCF's Moderate JupyterHub gets these default resources:
 
-      - 32 CPUs
-      - 32GB Memory
+      - 24 CPUs
+      - 48GB Memory
       - NCCS filesystem access (Lustre and NFS)
 
+      The **Compute Heavy CPU Lab** spawned by OLCF's Moderate JupyterHub gets these default resources:
 
-      Each GPU Lab gets the following resources:
+      - 48 CPUs
+      - 128GB Memory
+      - NCCS filesystem access (Lustre and NFS)
+
+      Each **GPU Lab** gets the following resources:
 
       - 16 CPUs
-      - 32GB Memory
+      - 16GB Memory
       - Nvidia V100 GPU
       - NCCS filesystem access (Lustre and NFS)
 
@@ -96,14 +107,14 @@ Hardware Resources
 
   .. tab-item:: Open JupyterHub
 
-      Each CPU Lab spawned by OLCF's Open JupyterHub gets these default resources:
+      Each **CPU Lab** spawned by OLCF's Open JupyterHub gets these default resources:
 
       - 8 CPUs
       - 24GB Memory
       - NCCS Open filesystem access (GPFS and NFS)
 
 
-      Each GPU Lab gets the following resources:
+      Each **GPU Lab** gets the following resources:
 
       - Currently unavailable
 
@@ -115,27 +126,24 @@ Software and Libraries
 
 Both CPU and GPU labs have the standard analysis and ML libraries: PyTorch, TensorFlow,
 Pandas, NumPy; and visualization libraries: Bokeh, Jax, Matplotlib, OpenCV. To see the
-full list of installed libraries, open a Console from the Launcher page and type in
-``conda list``. These libraries should cover most use cases. You can also find
-instructions for setting up a custom conda environment for use with JupyterLab further
-down.
+full list of installed libraries, execute ``!conda list`` in a Jupyter cell, or
+open a Console from the Launcher page and type in ``conda list``.
+These libraries should cover most use cases. You can also find
+instructions for setting up a custom Conda environment for use with JupyterLab :ref:`here <conda-environments>`.
 
-The GPU lab provides two different environments, CUDA10 and CUDA11. Both the CUDA10 and
-CUDA11 environments provide GPU support for PyTorch, CuPy, and CudNN. **GPU support for
-Tensorflow is currently only available in the CUDA10 environment.** Tensorflow only has
-CPU support in the CUDA11 environments. The image below shows the CUDA options in the Launcher page.
+The GPU lab provides a single CUDA 12 environment which provides GPU support for PyTorch, TensorFlow, CuPy, and CudNN.
 
-.. image:: /images/jupyter/jupyter_launcher_cudaenvs.png
+.. image:: /images/jupyter/jupyter_launcher_cudaenvs2.png
 
-Working within Lustre and NFS (Launching a notebook)
+Working within Lustre and NFS (Launching a Notebook)
 ----------------------------------------------------
 
 To see the root of your filesystem access, within your JupyterLab interface, click this
-circled folder (you can traverse to your users spaces from there):
+circled folder (you can traverse to your user's spaces from there):
 
-.. image:: /images/jupyter/directory_access.png
+.. image:: /images/jupyter/directory_access2.png
 
-You should see **lustre** and **ccs** - the "top" of Lustre and NFS respectively.
+You should see **lustre** and **ccs** - the "top" of Lustre and NFS, respectively.
 
 Then, you can start a notebook in the directory of your choosing (relative to your user access). 
 
@@ -148,18 +156,20 @@ the notebook in your current path.
   sessions. Make sure you are saving your work in a location in /ccs or /lustre where you
   have write access.
 
-In the example image below, I have launched a notebook in my **/ccs/proj/<proj>/<uid>/**
-directory (the notebook filename is "Untitled.ipynb" - you can rename yours):
+In the example image below, I have launched a notebook in my **/lustre/orion/<proj>/scratch/<uid>/Jupyter_example**
+directory (the notebook filename is "Example.ipynb" - you can rename yours):
 
-.. image:: /images/jupyter/directory_example.png
+.. image:: /images/jupyter/directory_example2.png
 
 Another method of getting to the filesystem path of your choosing is selecting
 **File->"Open from Path"** and typing the desired path in the text box:
 
-.. image:: /images/jupyter/open_file_path.png
+.. image:: /images/jupyter/open_file_path2.png
 
 
-Conda environments and custom notebooks
+.. _conda-environments:
+
+Conda Environments and Custom Notebooks
 ---------------------------------------
 
 From the Console of a particular environment, you can install additional libraries with a simple ``conda install`` to
@@ -172,9 +182,10 @@ Conda environments need to be saved in a ``/ccs`` or ``/lustre/orion`` directory
 
 .. warning::
 
-   Please note that **GPFS and Lustre are purged**.
+   Please note that **GPFS and Lustre are purged**. If you would like to request a purge exception, please contact our helpdesk at help@olcf.ornl.gov
+   or submit a ticket through the myOLCF "Ticket" portal.
 
-Example: Creating a Conda environment on Jupyter
+Example: Creating a Conda Environment on Jupyter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
@@ -184,7 +195,7 @@ Example: Creating a Conda environment on Jupyter
    environments on other machines like Frontier or Andes to run jobs. You will
    need to recreate the environment separately on those machines. Alternatively,
    See our :doc:`Jupyter Visibility Guide </software/python/jupyter_envs>` for
-   details on how to make your Fronter/Andes environments visible to Jupyter --
+   details on how to make your Frontier/Andes environments visible to Jupyter --
    which we highly recommend doing instead.
 
 In this example, we will create a simple environment that installs NumPy.
@@ -194,7 +205,7 @@ Although this example installs NumPy, the instructions below can still be follow
 
 #. From the JupyterLab Launcher page, click on the Terminal option.
 
-#. Next, create your conda env:
+#. Next, create your Conda environment:
 
    .. code-block::
 
@@ -233,20 +244,20 @@ To delete your environment, you will need to delete it from the path where the e
 was created, as well as delete the corresponding directory from ``~/.local/share/jupyter/kernels``.
 
 
-Manually stopping your JupyterLab session
+Manually Stopping Your JupyterLab Session
 -----------------------------------------
 
-All JupyterLab sessions expire and termninate if they are left idle for an 1-hour. 
+All JupyterLab sessions expire and termninate if they are left idle for 1-hour. 
 
-If you would like to terminate your session manually though, to select a different JupyterLab image for instance (going from CPU to GPU-enabled, or vice versa), you can do so by going to **File -> Hub Control Panel -> Stop Server**. 
+If you would like to terminate your session manually (e.g., so that you can switch between the CPU to GPU-enabled JupyterLab images, or vice versa), you can do so by going to **File -> Hub Control Panel -> Stop My Server**. 
 
 This will take a few seconds to shutdown, then you can restart and reselect a provided JupyterLab image from the menu.
 
-Things to be aware of
+Things to Be Aware Of
 ---------------------
 
 - All notebooks have an idle time limit of 1-hour. After 1-hour of idle time, your JupyterLab session will terminate. You may restart your session though.
-- To persist a notebook and conda environment, it is highly recommended to use your NFS project space (/ccs/proj/<project-id>/<uid>/).
+- To persist a notebook and Conda environment, it is highly recommended to use your NFS project space (/ccs/proj/<project-id>/<uid>/).
 - The GPU-labs are limited resources. There is no guarantee of a GPU being readily available for JupyterLab. Please use the more readily accessible CPU-Labs, unless you absolutely need a GPU.
 
 Example Jupyter Notebooks

@@ -18,14 +18,14 @@ Although a given vendor may have various access options (see :doc:`/quantum/quan
 IBM Quantum 
 ===========
 
-`Qiskit <https://docs.quantum.ibm.com/>`__ provides access to the IBM backends.
+`Qiskit <https://quantum.cloud.ibm.com/docs/guides>`__ provides access to the IBM backends.
 
 For more information please see:
 
-* `<https://docs.quantum.ibm.com/start/install>`__
-* `<https://docs.quantum.ibm.com/start/hello-world>`__
-* `<https://docs.quantum.ibm.com/lab>`__
-* `<https://docs.quantum.ibm.com/verify/local-testing-mode>`__
+* `<https://quantum.cloud.ibm.com/docs/guides/install-qiskit>`__
+* `<https://quantum.cloud.ibm.com/docs/guides/hello-world>`__
+* `<https://quantum.cloud.ibm.com/docs/guides/local-testing-mode>`__
+* `<https://quantum.cloud.ibm.com/docs/guides/execution-modes>`__
 
 .. list-table:: Latest script tests
    :widths: 25 25 25 25
@@ -35,14 +35,18 @@ For more information please see:
      - ``qiskit``
      - ``qiskit-ibm-runtime``
      - ``qiskit-aer``
-   * - 3.10.14
-     - 1.0.2
-     - 0.22.0
-     - 0.13.3
+   * - 3.12.0
+     - 2.1.2
+     - 0.41.1
+     - 0.17.1
 
 .. note::
 
-   Your IBMQ API Token is listed on your IBM dashboard at `<https://quantum-computing.ibm.com/>`__.
+   You can create an IBMQ API Token from your IBM Cloud dashboard at `<https://quantum.cloud.ibm.com/>`__,
+   or view previously created tokens at `<https://cloud.ibm.com/iam/apikeys>`__.
+
+   Additionally, you will need a Cloud Resource Name (CRN) for your IBM Quantum project.
+   You can find this on the "Instances" page in your IBM Quantum dashboard at `<https://quantum.cloud.ibm.com/instances>`__.
 
 .. tab-set::
 
@@ -51,15 +55,15 @@ For more information please see:
       .. code-block:: python
 
          from qiskit import QuantumCircuit, transpile
-         from qiskit_ibm_runtime import QiskitRuntimeService, Session, Sampler
+         from qiskit_ibm_runtime import QiskitRuntimeService, Session, SamplerV2 as Sampler
          import time
 
-         # Save / Load Credentials (csc431 used as example project)
-         #QiskitRuntimeService.save_account(channel="ibm_quantum", token="API TOKEN GOES HERE", overwrite=True)
-         service = QiskitRuntimeService(channel="ibm_quantum", instance="ibm-q-ornl/ornl/csc431")
+         # Save / Load Credentials
+         QiskitRuntimeService.save_account(channel="ibm_cloud", token="API TOKEN GOES HERE", overwrite=True, instance="CRN GOES HERE")
+         service = QiskitRuntimeService(channel="ibm_cloud", instance="CRN GOES HERE")
 
-         # Get backend (csc431 used as example project)
-         #backend = service.backend("backend_name_here", instance="ibm-q-ornl/ornl/csc431")
+         # Get backend
+         #backend = service.backend("backend_name_here")
          backend = service.least_busy(simulator=False, operational=True)
 
          # Build circuit
@@ -70,18 +74,20 @@ For more information please see:
          compiled_circuit = transpile(circuit, backend)
 
          # Submit job
-         sampl = Sampler(backend)
-         job = sampl.run(compiled_circuit,shots=1000)
+         sampl = Sampler(mode=backend)
+         job = sampl.run([compiled_circuit],shots=1000)
 
          # Wait for job to complete
-         while str(job.status()) != "JobStatus.DONE":
+         while str(job.status()) != "DONE":
              print("Job status is", job.status() )
              time.sleep(30)
          print("Job status is", job.status() )
 
          # Gather results
          result = job.result()
-         probs = result.quasi_dists
+         probs = result[0].data.c.get_counts()
+
+         print('PubResult: ',result[0])
          print("\nProbabilities for 00 and 11 are:",probs)
 
          # Draw the circuit
@@ -92,7 +98,7 @@ For more information please see:
       .. code-block:: python
 
          from qiskit import QuantumCircuit, transpile
-         from qiskit_ibm_runtime import Session, Sampler
+         from qiskit_ibm_runtime import Session, SamplerV2 as Sampler
          from qiskit_ibm_runtime.fake_provider import FakeManilaV2
          from qiskit_aer import AerSimulator
 
@@ -106,14 +112,16 @@ For more information please see:
          circuit.cx(0, 1)
          circuit.measure([0,1], [0,1])
          compiled_circuit = transpile(circuit, backend)
-         
+
          # Run the sampler job locally using AerSimulator or "Fake" Backend.
          # Session syntax is supported but ignored because local mode doesn't support sessions.
          with Session(backend=backend) as session:
-             sampler = Sampler(session=session)
+             sampler = Sampler(mode=session)
              result = sampler.run([compiled_circuit],shots=1000).result()
 
-         probs = result.quasi_dists
+         probs = result[0].data.c.get_counts()
+
+         print('PubResult: ',result[0])
          print("\nProbabilities for 00 and 11 are:",probs)
 
          # Draw the circuit
@@ -136,102 +144,215 @@ After running the above script(s), you should see something similar to:
 Quantinuum
 ==========
 
+.. note::
+    
+    The platform that ``pytket-quantinuum`` serves is being depreciated March 31, 2025 and will be replaced by Quantinuum Nexus.
+    ``pytket-quantinuum`` will continue to function, but won't be able to target new Quantinuum Nexus devices.
+
 The tket framework is a software platform for the development and execution of gate-level quantum computation, providing state-of-the-art performance in circuit compilation.
 `Pytket <https://tket.quantinuum.com/api-docs/>`__ is a python module for interfacing with tket, and installing the `Quantinuum pytket extension <https://cqcl.github.io/pytket-quantinuum/api/>`__ allows pytket circuits to be executed on Quantinuum's quantum devices.
+
+Quantinuum Nexus is a cloud-based quantum computing platform accessed via the ``qnexus`` Python package. Nexus offers users automated job and resource managment, as well as cloud storage and visibility of job resources.
 
 For more information please see:
 
 * `<https://tket.quantinuum.com/api-docs/>`__
 * `<https://cqcl.github.io/pytket-quantinuum/api/>`__
-* `<https://tket.quantinuum.com/examples/Getting_started.html>`__
-* `<https://github.com/CQCL/pytket-quantinuum/tree/main/examples>`__
+* `<https://tket.quantinuum.com/api-docs/getting_started.html>`__
+* `<https://docs.quantinuum.com/h-series/trainings/getting_started/pytket_quantinuum/pytket_quantinuum.html>`__
 
-.. list-table:: Latest script tests
-   :widths: 33 33 34
-   :header-rows: 1
+.. tab-set::
 
-   * - ``python``
-     - ``pytket``
-     - ``pytket-quantinuum``
-   * - 3.10.14
-     - 1.26.0
-     - 0.32.0
+   .. tab-item:: Extensions
 
-.. code-block:: python
+        .. list-table:: Latest script tests
+            :widths: 33 33 34
+            :header-rows: 1
 
-   from pytket.circuit import Circuit
-   from pytket.extensions.quantinuum import QuantinuumBackend
-   from pytket.backends import ResultHandle
-   from pytket.backends.backendresult import BackendResult
-   import json
-   import time
+            * - ``python``
+              - ``pytket``
+              - ``pytket-quantinuum``
+            * - 3.11.9
+              - 1.31.1
+              - 0.37.0
 
-   # Build the circuit
-   circuit = Circuit(2, name="Bell Test")
-   circuit.H(0)
-   circuit.CX(0, 1)
-   circuit.measure_all()
+        .. code-block:: python
 
-   # Choose your machine and login (e.g., H1-1E and CSC431 group)
-   machine = "H1-1E"
-   backend = QuantinuumBackend(device_name=machine, group="CSC431")
-   backend.login()
+            from pytket.circuit import Circuit
+            from pytket.extensions.quantinuum import QuantinuumBackend
+            from pytket.backends import ResultHandle
+            from pytket.backends.backendresult import BackendResult
+            import json
+            import time
 
-   # Status of desired machine
-   print(machine, "status:", QuantinuumBackend.device_state(device_name=machine))
+            # Build the circuit
+            circuit = Circuit(2, name="Bell Test")
+            circuit.H(0)
+            circuit.CX(0, 1)
+            circuit.measure_all()
 
-   # List available devices
-   print([x.device_name for x in QuantinuumBackend.available_devices()])
+            # Choose your machine and login (e.g., H1-1E and CSC431 group)
+            machine = "H1-1E"
+            backend = QuantinuumBackend(device_name=machine, group="CSC431")
+            backend.login()
 
-   # Compile circuit
-   compiled_circuit = backend.get_compiled_circuit(circuit, optimisation_level=0)
-   n_shots = 100
+            # Status of desired machine
+            print(machine, "status:", QuantinuumBackend.device_state(device_name=machine))
 
-   # Estimate the cost (H1-1SC, H2-1SC are syntax checkers for H1-1 and H2-1)
-   # Causes problems when on an HPC compute node w/ proxy settings -- advised to run separately on login node w/o proxy
-   #backend.cost(compiled_circuit, n_shots=n_shots, syntax_checker="H1-1SC")
+            # List available devices
+            print([x.device_name for x in QuantinuumBackend.available_devices()])
 
-   # Run the circuit
-   handle = backend.process_circuit(compiled_circuit, n_shots=n_shots)
-   print(handle)
+            # Compile circuit
+            compiled_circuit = backend.get_compiled_circuit(circuit, optimisation_level=0)
+            n_shots = 100
 
-   # Save your job handle
-   with open("pytket_example_job_handle.json", "w") as file:
-       json.dump(str(handle), file)
+            # Estimate the cost (H1-1SC, H2-1SC are syntax checkers for H1-1 and H2-1)
+            # Causes problems when on an HPC compute node w/ proxy settings -- advised to run separately on login node w/o proxy
+            #backend.cost(compiled_circuit, n_shots=n_shots, syntax_checker="H1-1SC")
 
-   # Check status of job (loop is necessary on an HPC compute node w/ proxy settings or else timeouts occur)
-   while str( backend.circuit_status(handle).status ) != "StatusEnum.COMPLETED":
-       status = backend.circuit_status(handle)
-       print("Job status is", status.status )
-       time.sleep(10)
-   status = backend.circuit_status(handle)
-   print("Job status is", status )
+            # Run the circuit
+            handle = backend.process_circuit(compiled_circuit, n_shots=n_shots)
+            print(handle)
 
-   # Retrieve and print results
-   with open("pytket_example_job_handle.json") as file:
-       handle_str = json.load(file)
-   handle = ResultHandle.from_str(handle_str)
-   result = backend.get_result(handle)
-   print(result.get_distribution())
-   print(result.get_counts())
+            # Save your job handle
+            with open("pytket_example_job_handle.json", "w") as file:
+                json.dump(str(handle), file)
 
-   # Save results
-   with open("pytket_example.json", "w") as file:
-       json.dump(result.to_dict(), file)
+            # Check status of job (loop is necessary on an HPC compute node w/ proxy settings or else timeouts occur)
+            while str( backend.circuit_status(handle).status ) != "StatusEnum.COMPLETED":
+                status = backend.circuit_status(handle)
+                print("Job status is", status.status )
+                time.sleep(10)
+            status = backend.circuit_status(handle)
+            print("Job status is", status )
 
-   # Not necesary here, but including syntax
-   # Load results
-   with open("pytket_example.json") as file:
-       data = json.load(file)
-   result = BackendResult.from_dict(data)
+            # Retrieve and print results
+            with open("pytket_example_job_handle.json") as file:
+                handle_str = json.load(file)
+            handle = ResultHandle.from_str(handle_str)
+            result = backend.get_result(handle)
+            print(result.get_distribution())
+            print(result.get_counts())
 
-After running the above script, you should see something similar to:
+            # Save results
+            with open("pytket_example.json", "w") as file:
+                json.dump(result.to_dict(), file)
 
-.. code-block::
+            # Not necesary here, but including syntax
+            # Load results
+            with open("pytket_example.json") as file:
+                data = json.load(file)
+            result = BackendResult.from_dict(data)
 
-    {(0, 0): 0.57, (1, 1): 0.43}
-    Counter({(0, 0): 57, (1, 1): 43})
+        After running the above script, you should see something similar to:
 
+        .. code-block::
+
+            {(0, 0): 0.57, (1, 1): 0.43}
+            Counter({(0, 0): 57, (1, 1): 43})
+    
+   .. tab-item:: Nexus
+        
+        .. list-table:: Latest script tests
+            :widths: 33 33 33
+            :header-rows: 1
+        
+            * - ``python``
+              - ``pytket``
+              - ``qnexus``
+            * - 3.11.11
+              - 1.41.0
+              - 0.11.0
+
+        .. code-block:: python
+
+            from pytket.circuit import Circuit
+            import qnexus as qnx
+            import datetime
+            import time
+
+            # Choose your machine and login (e.g., H1-1E)
+            machine = "H1-1E"
+
+            # Login using username and password.
+            qnx.login_with_credentials()
+
+            # Nexus contains all jobs in projects. Setup a new project called "Nexus-Test"
+            project = qnx.projects.get_or_create(name="Nexus-Test")
+            qnx.context.set_active_project(project)
+
+            # Get simulator and emulator devices
+            device_df = qnx.devices.get_all(nexus_hosted=False).df()
+            print("Available Quantinuum Devices:",[device for device in device_df['device_name'].tolist()])
+
+            # Get simulator and emulator devices specifically hosted on Nexus
+            device_df = qnx.devices.get_all(nexus_hosted=True).df()
+            print("Available Nexus Devices:",[device for device in device_df['device_name'].tolist()])
+
+            # All job names must be unique within a Nexus project.
+            jobname_suffix = datetime.datetime.now().strftime("%Y_%m_%d-%H-%M-%S")
+
+            # Create a configuration to target the desired machine with a specific group (e.g., STF007)
+            config = qnx.QuantinuumConfig(device_name=machine, user_group="STF007")
+
+            # Build the circuit
+            circuit = Circuit(2, name="Bell Test")
+            circuit.H(0)
+            circuit.CX(0, 1)
+            circuit.measure_all()
+
+
+            # It is required that all circuits be uploaded to the nexus database
+            # before compilation/execution jobs can be used.
+
+            ref = qnx.circuits.upload(circuit=circuit, name=f"Bell-Test-{jobname_suffix}")
+
+            # Compile job
+            ref_compile_job = qnx.start_compile_job(
+                    circuits=[ref],
+                    backend_config=config,
+                    optimisation_level=2,
+                    name=f"Bell-compiliation-{jobname_suffix}"
+                    )
+
+            #Further operations must be blocked while a job is running.
+            print("Compile job status:", qnx.jobs.status(ref_compile_job).status)
+            qnx.jobs.wait_for(ref_compile_job,timeout=600.0)
+            print("Compile job status:", qnx.jobs.status(ref_compile_job).status)    
+
+            # Get the compiled circuit.
+            ref_compiled_circuit = qnx.jobs.results(ref_compile_job)[0].get_output()
+            compiled_circuit = ref_compiled_circuit.download_circuit()
+
+            # Execute the job.
+            ref_execute_job = qnx.start_execute_job(
+                    circuits=[ref_compiled_circuit],
+                    n_shots=[100],
+                    backend_config=config,
+                    name=f"Bell-execute-{jobname_suffix}"
+                    )
+
+            # Get job status and halt further operations while job runs.
+
+            print("Execute job status:", qnx.jobs.status(ref_execute_job).status)
+            qnx.jobs.wait_for(ref_execute_job,timeout=600.0)[0]
+            print("Execute job status:", qnx.jobs.status(ref_execute_job).status)
+
+            # Get results.
+            ref_result = qnx.jobs.results(ref_execute_job)[0]
+            backend_results = ref_result.download_result()
+            print(backend_results.get_distribution())
+            print(backend_results.get_counts())
+
+            # Logout
+            qnx.client.auth.logout()
+
+        After running the above script, you should see something similar to:
+
+        .. code-block::
+
+            {(0, 0): 0.57, (1, 1): 0.43}
+            Counter({(0, 0): 57, (1, 1): 43})
 
 IonQ
 ====
@@ -242,7 +363,7 @@ One useful resource that showcases multiple access pathways is their `Hello Many
 
 For more information please see:
 
-* `<https://docs.ionq.com/introduction>`__
+* `<https://docs.ionq.com/>`__
 * `<https://ionq.com/resources>`__
 * `<https://ionq.com/resources/anthology/developers/hello-many-worlds-in-7-quantum-languages>`__
 * `<https://docs.ionq.com/guides/managing-api-keys>`__
@@ -255,9 +376,9 @@ For more information please see:
    * - ``python``
      - ``qiskit``
      - ``qiskit-ionq``
-   * - 3.10.14
-     - 1.0.2
-     - 0.5.0
+   * - 3.11.9
+     - 1.2.0
+     - 0.5.4
 
 .. code-block:: python
 
@@ -272,7 +393,7 @@ For more information please see:
     provider = IonQProvider()
     print(provider.backends())
 
-    # Run on "ionq_simulator", "ionq_qpu", "simulator", "qpu.harmony", "qpu.aria-1"
+    # Run on "ionq_simulator", "ionq_qpu", "simulator", "qpu.harmony", "qpu.aria-1", "qpu.aria-2"
     backend = provider.get_backend("simulator")
 
     # Create a basic Bell State circuit:
@@ -296,78 +417,72 @@ After running the above script, you should see something similar to:
     {'00': 0.5, '11': 0.5}
 
 
-Rigetti
-=======
 
-`PyQuil <https://pyquil-docs.rigetti.com/en/stable/>`__ allows you to build and execute Quil programs to run on Rigetti QPUs and QVMs.
-To target QPUs/QVMs locally in a scripting environment, you'll need to `install the Quil SDK locally <https://docs.rigetti.com/qcs/getting-started/set-up-your-environment/installing-locally>`__.
-An example of how to install the Quil SDK at OLCF in an HPC environment is shown on our :doc:`Quantum Software on HPC Systems Page </quantum/quantum_software/hybrid_hpc>`.
+IQM
+===
+
+An IQM+Qiskit plugin provides access to IQM backends.
 
 For more information please see:
 
-* `<https://pyquil-docs.rigetti.com/en/stable/>`__
-* `<https://docs.rigetti.com/qcs>`__
-* `<https://docs.rigetti.com/qcs/getting-started/set-up-your-environment/installing-locally>`__
-* `<https://pyquil-docs.rigetti.com/en/stable/getting_started.html#run-your-first-program>`__
+* `<https://iqm-finland.github.io/qiskit-on-iqm/user_guide.html>`__
 
 .. note::
-   To be able to authenticate to Rigetti via the CLI, you'll first need to download your API keys from `<https://qcs.rigetti.com/auth/token>`__.
+
+   Your IQM API Token is listed on your IQM Resonance dashboard at `<https://resonance.meetiqm.com/>`__.
 
 .. list-table:: Latest script tests
-   :widths: 50 50
+   :widths: 33 33 34
    :header-rows: 1
 
    * - ``python``
-     - ``pyquil``
-   * - 3.10.14
-     - 4.8.0
+     - ``qiskit``
+     - ``qiskit-iqm``
+   * - 3.11.11
+     - 1.1.2
+     - 15.5
 
 .. code-block:: python
 
-   from pyquil import get_qc, Program
-   from pyquil.gates import H, CNOT, MEASURE
-   from pyquil.quilbase import Declare
-   import time
-   # Set up your Quantum Quil Program (in this case, a "Bell State")
-   program = Program(
-       Declare("ro", "BIT", 2),
-       H(0),
-       CNOT(0, 1),
-       MEASURE(0, ("ro", 0)),
-       MEASURE(1, ("ro", 1)),
-   ).wrap_in_numshots_loop(10)
+    from iqm.qiskit_iqm import IQMProvider, transpile_to_IQM
+    from qiskit import QuantumCircuit
 
-   # Request your QVM or QPU (e.g., Ankaa-2 QVM)
-   qc = get_qc("Ankaa-2-qvm")
+    # Backend to connect to (e.g., Garnet's algorithm checker)
+    server_url = "https://cocos.resonance.meetiqm.com/garnet:mock"
 
-   # Compile, run, and print results
-   # NOTE When using actual QPUs:
-   # Have run into timeout issues when trying to query results too quickly after compiling when commands are on separate lines
-   # But in theory they can be on separate lines (just may need to play around with the timeout parameter)
-   print( qc.run( qc.compile(program) ).get_register_map().get("ro") )
+    # Authentication token (alternatively can set the IQM_TOKEN environment variable)
+    api_token = "PUT TOKEN HERE"
 
-With the way pyQuil works, you need to launch its compiler server, launch the virtual machine / simulator QVM server, and then launch your pyQuil Python program on the same host.
-Running a Python script will ping and utilize both the compiler and QVM servers.
+    SHOTS = 100
 
-Thus, the script can be run like this:
+    # Define quantum circuit
+    num_qb = 5
+    qc = QuantumCircuit(num_qb)
 
-.. code-block:: bash
+    qc.h(0)
+    for qb in range(1, num_qb):
+        qc.cx(0, qb)
+    qc.barrier()
+    qc.measure_all()
 
-   (ENV_NAME)$ quilc -P -S > quilc.log 2>&1 & qvm -S > qvm.log 2>&1 & python3 script.py ; kill $(jobs -p)
+    # Initialize backend
+    backend = IQMProvider(server_url, token=api_token).get_backend()
+
+    # Transpile circuit
+    qc_transpiled = transpile_to_IQM(qc, backend)
+    print(qc_transpiled.draw(output="text"))
+
+    # Run circuit
+    job = backend.run(qc_transpiled, shots=SHOTS)
+    print(job.result().get_counts())
+
 
 After running the above script, you should see something similar to:
 
 .. code-block::
 
-    [[1 1]
-     [0 0]
-     [1 1]
-     [0 0]
-     [1 1]
-     [0 0]
-     [1 1]
-     [1 1]
-     [1 1]
-     [0 0]]
+    {'10101': 25, '11111': 23, '01010': 24, '00000': 28}
 
+.. note::
 
+   The mock system used here is only for testing your algorithm. It will compile your code for the instruments of an IQM quantum computer. However, as no actual instruments are connected to the Mock environment, it will only yield random results – this is not a simulator. See `facade backends <https://iqm-finland.github.io/qiskit-on-iqm/user_guide.html#running-a-quantum-circuit-on-a-facade-backend>`__ for an alternative option.

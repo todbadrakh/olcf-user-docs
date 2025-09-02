@@ -10,7 +10,7 @@ This guide walks through an example of how to ``tar`` up your conda environment 
 
 OLCF Systems this guide applies to:
 
-* Frontier
+* :doc:`Frontier </systems/frontier_user_guide>`
 
 Installing Conda-Pack
 =====================
@@ -21,7 +21,7 @@ To install ``conda-pack``, install it from the ``conda-forge`` channel like so:
 
 .. code-block:: bash
 
-   $ conda install -c conda-forge conda-pack
+   conda install conda-pack -c conda-forge
 
 .. note::
    If ``conda-pack`` is unable to be installed in your production environment, you can install ``conda-pack`` in a separate environment instead and follow a similar workflow.
@@ -31,7 +31,7 @@ Installing ``conda-pack`` will let you use the ``conda pack`` command which can 
 .. code-block:: bash
 
    # Pack environment located at an explicit path into my_env.tar.gz
-   $ conda pack -p /explicit/path/to/my_env
+   conda pack --format tar.gz --n-threads -1 --prefix /explicit/path/to/my_env --output ./my_env.tar.gz
 
 After packing your environment, it can then be moved to the NVMe using ``sbcast`` when in a compute job.
 Packing your environment will also put a ``conda-unpack`` script into the same ``.tar.gz`` archive.
@@ -49,34 +49,35 @@ First, let's load our modules and setup the environment:
 .. code-block:: bash
 
    # Loading the relevant modules
-   $ module load PrgEnv-gnu/8.5.0
-   $ module load rocm/5.7.1
-   $ module load craype-accel-amd-gfx90a
+   module load PrgEnv-gnu/8.6.0
+   module load rocm/6.2.4
+   module load craype-accel-amd-gfx90a
 
    # Create your conda environment
-   $ module load miniforge3/23.11.0-0
-   $ conda create -p $MEMBERWORK/<PROJECT_ID>/torch_env python=3.10
-   $ source activate $MEMBERWORK/<PROJECT_ID>/torch_env
+   module load miniforge3/23.11.0-0
+   conda create -p $MEMBERWORK/<PROJECT_ID>/torch_env python=3.10 -c conda-forge
+   source activate $MEMBERWORK/<PROJECT_ID>/torch_env
 
-   # Install PyTorch w/ ROCm 5.7 support from pre-compiled binary
-   $ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.7
+   # Install PyTorch w/ ROCm 6.2 support from pre-compiled binary
+   pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2
 
    # Install Conda-Pack into your environment
-   $ conda install -c conda-forge conda-pack
+   conda install conda-pack -c conda-forge
 
 
 Next, let's pack our new conda environment:
 
 .. code-block:: bash
 
-   $ cd $MEMBERWORK/<PROJECT_ID>
-   $ conda pack -p $MEMBERWORK/<PROJECT_ID>/torch_env
+   cd $MEMBERWORK/<PROJECT_ID>
+   # use all cores available for packing
+   conda pack --format tar.gz --n-threads -1 --prefix $MEMBERWORK/<PROJECT_ID>/torch_env --output ./torch_env.tar.gz 
 
 Finally, let's run a compute job:
 
 .. code-block:: bash
 
-   $ sbatch --export=NONE submit.sbatch
+   sbatch --export=NONE submit.sbatch
 
 Below is an example batch script that uses ``sbcast``, unpacks our environment, and runs an example Python script across 8 nodes:
 
@@ -98,8 +99,8 @@ Below is an example batch script that uses ``sbcast``, unpacks our environment, 
    unset SLURM_EXPORT_ENV
 
    # Setup modules
-   module load PrgEnv-gnu/8.5.0
-   module load rocm/5.7.1
+   module load PrgEnv-gnu/8.6.0
+   module load rocm/6.2.4
    module load miniforge3/23.11.0-0
    module load craype-accel-amd-gfx90a
 
@@ -118,7 +119,7 @@ Below is an example batch script that uses ``sbcast``, unpacks our environment, 
    # Untar the environment file (only need 1 task per node to do this)
    srun -N8 --ntasks-per-node 1 mkdir /mnt/bb/${USER}/torch_env
    echo "untaring torchenv"
-   srun -N8 --ntasks-per-node 1 tar -xzf /mnt/bb/${USER}/torch_env.tar.gz -C  /mnt/bb/${USER}/torch_env
+   srun -N8 --ntasks-per-node 1 -c56 tar --use-compress-program=pigz -xf /mnt/bb/${USER}/torch_env.tar.gz -C  /mnt/bb/${USER}/torch_env
 
    # Unpack the env
    source activate /mnt/bb/${USER}/torch_env
@@ -183,15 +184,17 @@ Here are the timings from the ``sbcast`` **NVMe** run:
 
 .. code-block::
 
-             JobID            Start              Elapsed 
-   --------------- ---------------- -------------------- 
-           jobid      .             00:01:13 
-     jobid.batch      .             00:01:13 
-    jobid.extern      .             00:01:13 
-         jobid.0      .             00:00:01 mkdir
-         jobid.1      .             00:00:49 untar
-         jobid.2      .             00:00:00 unpack
+             JobID            Start               Elapsed
+   --------------- ---------------- ---------------------
+           jobid      .             00:01:17
+     jobid.batch      .             00:01:17
+    jobid.extern      .             00:01:17
+         jobid.0      .             00:00:00 mkdir 
+         jobid.1      .             00:00:39 untar
+         jobid.2      .             00:00:03 conda unpack
          jobid.3      .             00:00:02 example.py
+
+
 
 Here are the timings if the environment was never broadcast from **Orion**:
 

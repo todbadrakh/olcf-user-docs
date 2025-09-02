@@ -103,8 +103,8 @@ Closeout and Quarterly Reports
 ------------------------------
 
 All QCUP projects are required to submit 
-`quarterly reports <https://www.olcf.ornl.gov/wp-content/accounts/Closeout_Template.doc>`__ and a
-`closeout report <https://www.olcf.ornl.gov/wp-content/accounts/industry_quarterly_report.doc>`__.
+`quarterly reports <https://www.olcf.ornl.gov/wp-content/uploads/industry_quarterly_report.doc>`__ and a
+`closeout report <https://www.olcf.ornl.gov/wp-content/uploads/Closeout_Template.doc>`__.
 These forms may be emailed to accounts@ccs.ornl.gov.
 
 .. _quantum-user:
@@ -151,8 +151,8 @@ Accessing Quantum Resources
 As opposed to setting up a personal account through each of the individual
 vendor websites, OLCF has purchased subscriptions to those vendor services and
 handles setting up your access to each one once your Quantum User Application
-is approved. You will receive individual email invitations from Quantinuum and
-Rigetti with further instructions, whereas for IBM you can proceed directly to
+is approved. You will receive individual email invitations from Quantinuum
+with further instructions, whereas for IBM you can proceed directly to
 their website to create an account. More details for gaining access to each
 vendor are listed below.
 
@@ -162,49 +162,38 @@ Example Python scripts for each QCUP vendor are located at our new :doc:`/quantu
 
 IBM Quantum Computing
 ---------------------
+.. note::
+   Beginning July 1, IBM's Quantum Cloud Platform allocates QPU resources by region. OLCF users will
+   be granted access to the QPU's Washington DC (us-east) region, however, if you would like access to
+   the QPU's in the Frankfurt (eu-de) region, please include this in your request.
 
-After submitting the OLCF quantum account application and receiving approval,
-proceed to `<https://quantum-computing.ibm.com/>`__ and click on "Create an IBMid
-account". Your IBM Quantum Hub account email will be the email associated with
-your OLCF account. If sign-in fails, contact help@olcf.ornl.gov. Once logged
-in, users will have access to the IBM Quantum Hub, IBM’s online platform for
-QPU access, forums for quantum computing discussion, etc. From the IBM Quantum
-Hub Dashboard, users can manage system reservations, view system (backend)
-statuses, and view the results of your past jobs. More information about using
-these IBM quantum resources can be found on the `IBM's Documentation <https://quantum-computing.ibm.com/docs/>`__
+After submitting the OLCF quantum account application and receiving approval, create an IBMid at `<https://login.ibm.com/>`__.
+Use your IBMid to login to your IBM Cloud Account by proceeding to `<https://quantum.cloud.ibm.com/signin>`__, 
+enter your IBMid email which will be the email associated with your OLCF account,
+leave the region selected as "Washington DC (us-east)", and press continue. 
+If sign-in fails or if you're asked for credit card information, contact help@olcf.ornl.gov. Once logged
+in, users will have access to the IBM Quantum Cloud Platform, IBM’s online platform for
+QPU access, viewing allocation details, accessing documention, etc. More information about using
+these IBM quantum resources can be found on the `IBM's Documentation <https://quantum.cloud.ibm.com/docs/>`__
 or our :doc:`OLCF IBM Quantum Guide </quantum/quantum_systems/ibm_quantum>`.
+
+.. warning::
+   When creating an account, DO NOT follow the "New to IBM Quantum? Create an
+   account on the upgraded IBM Quantum Platform" link.  Instead follow the
+   instructions as indicated above.
 
 Quantinuum 
 ----------
 
 After submitting the OLCF quantum account application and receiving approval,
 you will receive an email from Quantinuum inviting you to create your quantum
-account. Once logged in, users will have access to Quantinuum's User Interface,
-`<https://um.qapi.quantinuum.com>`__, their online platform for managing jobs and 
-accessing the available quantum systems, including the System Model H1, via the 
-cloud. From the UI, users can view system status and upcoming system availability, 
-as well as monitor batch submissions and job history. Information on using the 
-quantum resources via Jupyter notebooks is available in the UI via the “Examples” 
-tab. Quantinuum’s systems feature mid-circuit measurement and qubit reuse, and are 
-compatible with a variety of software frameworks.
-
-Rigetti
--------
-
-After submitting the OLCF quantum account application and receiving approval,
-you will receive an email from support@rigetti.com inviting you to create your
-quantum account. If you did not receive this, proceed to
-`<https://qcs.rigetti.com/sign-in>`__ and click “Sign In”. It is necessary that the
-email you use for sign in be associated with an affiliated subscribing
-institution, i.e. ORNL, ANL, etc. If sign in fails, contact help@olcf.ornl.gov.
-Once logged in, users will have access to Quantum Cloud Services (QCS),
-Rigetti’s online platform for accessing the hybrid infrastructure of available
-quantum processors and classical computational framework via the cloud. From
-the QCS, users can view system status and availability, initiate and manage
-quantum infrastructure reservations (either executing programs manually or
-adding them to the queue). Information on using this resource is available on
-the `Rigetti's Documentation <https://docs.rigetti.com/qcs/>`__ or our 
-:doc:`OLCF Rigetti Guide </quantum/quantum_systems/rigetti>`.
+account. Once logged in, users will have access to Quantinuum's Nexus
+Interface, `<https://nexus.quantinuum.com/>`__, their online platform
+for managing jobs and accessing the available quantum systems via the cloud.
+From Nexus, users can view system status and upcoming system availability, as
+well as monitor batch submissions and job history. More information about using
+Quantinuum resources can be found on our :doc:`OLCF Quantinuum Guide
+</quantum/quantum_systems/quantinuum>`.
 
 IonQ
 ----------
@@ -213,9 +202,25 @@ After submitting the OLCF quantum account application and receiving approval,
 you will receive an email from IonQ inviting you to create your quantum
 account. Once logged in, users will have access to IonQ's User Interface,
 `<https://cloud.ionq.com/>`__, their online platform for managing jobs and
-accessing the available quantum systems, including the Harmony and Aria-1 systems,
+accessing the available quantum systems, including the Forte and Aria systems,
 as well as the simulator, via the cloud. From the UI, users can view system status
 and upcoming system availability, as well as monitor batch submissions and job history.
+More information about using IonQ resources can be found on our :doc:`OLCF IonQ
+Guide </quantum/quantum_systems/ionq>`.
+
+IQM
+---
+
+After submitting the OLCF quantum account application and receiving approval,
+you will receive an email from IQM inviting you to create your quantum
+account. Once logged in, users will have access to IQM's User Interface,
+`<https://resonance.meetiqm.com>`__, their online dashboard for managing jobs and
+accessing the available quantum systems. Users will gain access to IQM hardware,
+as well as the quantum algorithm checker (which verifies that the execution of
+workflow is possible, but does not yield sensible results), via the cloud. From
+the dashboard, users can view system status and upcoming system availability,
+as well as monitor batch submissions and job history.  More information about
+using IQM resources can be found on our :doc:`OLCF IQM Guide </quantum/quantum_systems/iqm>`.
 
 Publication Citations
 =====================

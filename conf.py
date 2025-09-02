@@ -9,6 +9,8 @@ http://www.sphinx-doc.org/en/master/config
 # pylint: disable=import-error, invalid-name, redefined-builtin
 
 import datetime as dt
+import os
+import shutil
 from sphinx.writers.html import HTMLTranslator
 
 #
@@ -36,7 +38,11 @@ author = 'OLCF'
 
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_design']
+extensions = ['sphinx_design', 'sphinx_copybutton']
+
+copybutton_prompt_text = r">>> |\.\.\. |\$ "
+copybutton_prompt_is_regexp = True
+copybutton_line_continuation_character = "\\"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -116,10 +122,23 @@ class PatchedHTMLTranslator(HTMLTranslator):
             node['target'] = '_blank'
         super().visit_reference(node)
 
+def copy_sw_file(app, exception):
+    src = '/tmp/software_list_group.json'
+    dest = os.path.join(app.builder.outdir, 'software/software_list/', 'software_list_group.json')
+
+    if os.path.exists(src):
+        shutil.copy(src, dest)
 
 def setup(app):
     '''Function to setup sphinx customizations.'''
     app.set_translator('html', PatchedHTMLTranslator)
+    # Add DataTables JavaScript
+    app.add_js_file('https://cdn.datatables.net/2.2.1/js/dataTables.js')
+    app.add_js_file('https://code.jquery.com/jquery-3.7.1.js')
+    # Add DataTables CSS
+    app.add_css_file('https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css')
+    # copy software list json after sphinx build completed
+    app.connect('build-finished', copy_sw_file)
 
 
 # globally-available substitutions

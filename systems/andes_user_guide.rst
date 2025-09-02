@@ -9,12 +9,12 @@ System Overview
 
 Andes is a 704-compute node commodity-type linux cluster. The primary purpose of Andes is to provide a
 conduit for large-scale scientific discovery via pre/post processing and
-analysis of simulation data generated on Summit.  
+analysis of simulation data generated on Frontier.  
 
 
 .. _andes-compute-nodes:
 
-Compute nodes
+Compute Nodes
 -------------
 
 Andes contains 704 compute nodes and 9 GPU nodes. Andes has two partitions:
@@ -59,7 +59,7 @@ transfer rate of 200 Gb/s.
 
 .. _andes-login-nodes:
 
-Login nodes
+Login Nodes
 -----------
 
 Andes features 8 login nodes which are identical to the *batch* partition
@@ -79,32 +79,32 @@ For more information on connecting to OLCF resources, see :ref:`connecting-to-ol
 
 --------------
 
-File systems
+File Systems
 ------------
 
-The OLCF's center-wide :ref:`data-orion-lustre-hpe-clusterstor-filesystem` and Summit's 
-Alpine2 are available on Andes for computational work.  An NFS-based file system provides
+The OLCF's center-wide :ref:`data-orion-lustre-hpe-clusterstor-filesystem` 
+is available on Andes for computational work.  An NFS-based file system provides
 :ref:`data-user-home-directories-nfs` and :ref:`data-project-home-directories-nfs`.
 Additionally, the OLCF's :ref:`data-hpss` provides archival spaces.
 
-LFS setstripe wrapper
+LFS setstripe Wrapper
 ---------------------
 
 The OLCF provides a wrapper for the ``lfs setstripe`` command that simplifies the process of striping files. The wrapper will enforce that certain settings are used to ensure that striping is done correctly. This will help to ensure good performance for users as well as prevent filesystem issues that could arise from incorrect striping practices. The wrapper is accessible via the ``lfs-wrapper`` module and will soon be added to the default environment on Frontier. 
 
 Orion is different than other Lustre filesystems that you may have used previously. To make effective use of Orion and to help ensure that the filesystem performs well for all users, it is important that you do the following:
 
-* Use the `capacity` OST pool tier (e.g. ``lfs setstripe -p capacity``)
-* Stripe across no more than 450 OSTs (e.g. ``lfs setstripe -c`` <= 450)
+* Use the `capacity` OST pool tier (e.g., ``lfs setstripe -p capacity``)
+* Stripe across no more than 450 OSTs (e.g., ``lfs setstripe -c`` <= 450)
 
 When the module is active in your environment, the wrapper will enforce the above settings. The wrapper will also do the following:
 
-* If a user provides a stripe count of -1 (e.g. ``lfs setstripe -c -1``) the wrapper will set the stripe count to the maximum allowed by the filesystem (currently 450)
-* If a user provides a stripe count of 0 (e.g. ``lfs setstripe -c 0``) the wrapper will use the OLCF default striping command which has been optimized by the OLCF filesystem managers: ``lfs setstripe -E 256K -L mdt -E 8M -c 1 -S 1M -p performance -z 64M -E 128G -c 1 -S 1M -z 16G -p capacity -E -1 -z 256G -c 8 -S 1M -p capacity``
+* If a user provides a stripe count of -1 (e.g., ``lfs setstripe -c -1``) the wrapper will set the stripe count to the maximum allowed by the filesystem (currently 450)
+* If a user provides a stripe count of 0 (e.g., ``lfs setstripe -c 0``) the wrapper will use the OLCF default striping command which has been optimized by the OLCF filesystem managers: ``lfs setstripe -E 256K -L mdt -E 8M -c 1 -S 1M -p performance -z 64M -E 128G -c 1 -S 1M -z 16G -p capacity -E -1 -z 256G -c 8 -S 1M -p capacity``
 
 Please contact the OLCF User Assistance Center if you have any questions about using the wrapper or if you encounter any issues.
 
-Shell and programming environments
+Shell and Programming Environments
 ==================================
 
 OLCF systems provide hundreds of software packages and scientific libraries
@@ -133,7 +133,7 @@ help@olcf.ornl.gov.
 
 --------------
 
-Environment management with lmod
+Environment Management with lmod
 --------------------------------
 
 The *modules* software package allows you to dynamically modify your user
@@ -152,12 +152,12 @@ Environment modules are structured hierarchically by compiler family such that
 packages built with a given compiler will only be accessible if the compiler
 family is first present in the environment.
 
-    **note:** Lmod can interpret both Lua modulefiles and legacy Tcl
+.. note:: 
+    Lmod can interpret both Lua modulefiles and legacy Tcl
     modulefiles. However, long and logic-heavy Tcl modulefiles may require
     porting to Lua.
 
-
-General usage
+General Usage
 ^^^^^^^^^^^^^
 
 Typical use of Lmod is very similar to that of interacting with modulefiles on
@@ -196,7 +196,7 @@ other OLCF systems. The interface to Lmod is provided by the ``module`` command:
     recursively processes loaded modules and automatically resolves
     conflicts.
 
-Searching for modules
+Searching for Modules
 ^^^^^^^^^^^^^^^^^^^^^
 
 Modules with dependencies are only available when the underlying dependencies,
@@ -218,12 +218,12 @@ sub-command can be used as summarized in the following table.
 +----------------------------------------+------------------------------------------------------------------------------------+
 
  
-Defining custom module collections
+Defining Custom Module Collections
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lmod supports caching commonly used collections of environment modules on a
 per-user basis in ``$home/.lmod.d``. To create a collection called "NAME" from
-the currently loaded modules, simply call ``module save NAME``. omitting "NAME"
+the currently loaded modules, simply call ``module save NAME``. Omitting "NAME"
 will set the user’s default collection. Saved collections can be recalled and
 examined with the commands summarized in the following table.
 
@@ -249,7 +249,7 @@ examined with the commands summarized in the following table.
 
 .. note::
     In order to avoid conflicts between user-defined collections
-    on multiple compute systems that share a home file system (e.g.
+    on multiple compute systems that share a home file system (e.g.,
     ``/ccs/home/[username]``), Lmod appends the hostname of each system to the
     files saved in in your ``~/.lmod.d`` directory (using the environment
     variable ``lmod_system_name``). This ensures that only collections
@@ -266,40 +266,39 @@ Installed Software
 The OLCF provides hundreds of pre-installed software packages and scientific
 libraries for your use, in addition to taking `software installation requests
 <https://www.olcf.ornl.gov/support/software/software-request/>`__. See the
-`software <https://www.olcf.ornl.gov/for-users/software/>`__ page for complete
-details on existing installs.
+:ref:`software-at-the-olcf` page for complete details on existing installs.
 
 Compiling
 =========
 
-Compiling code on andes is typical of commodity or Beowulf-style HPC Linux
+Compiling code on Andes is typical of commodity or Beowulf-style HPC Linux
 clusters.
 
-Available compilers
+Available Compilers
 -------------------
 
 The following compilers are available on Andes:
 
-- `intel <https://www.olcf.ornl.gov/software_package/intel/>`__, intel composer xe (default)
-- `pgi <https://www.olcf.ornl.gov/software_package/pgi/>`__, the portland group compilar suite
-- `gcc <https://www.olcf.ornl.gov/software_package/gcc/>`__, the gnu compiler collection
+- **intel**, Intel composer xe (default)
+- **pgi**, the Portland group compiler suite
+- **gcc**, the gnu compiler collection
 
-Upon login, default versions of the intel compiler and openmpi (message passing
+Upon login, default versions of the Intel compiler and OpenMPI (message passing
 interface) libraries are automatically added to each user's environment. Users
-do not need to make any environment changes to use the default version of intel
-and openmpi.
+do not need to make any environment changes to use the default version of Intel
+and OpenMPI.
 
 --------------
 
-Changing compilers
+Changing Compilers
 ------------------
 
 If a different compiler is required, it is important to use the correct
 environment for each compiler. To aid users in pairing the correct compiler and
-environment, the module system on andes automatically pulls in libraries compiled
+environment, the module system on Andes automatically pulls in libraries compiled
 with a given compiler when changing compilers. The compiler modules will load
 the correct pairing of compiler version, message passing libraries, and other
-items required to build and run code. To change the default loaded intel
+items required to build and run code. To change the default loaded Intel
 environment to the gcc environment for example, use:
 
 .. code::
@@ -310,7 +309,7 @@ This will automatically unload the current compiler and system libraries
 associated with it, load the new compiler environment and automatically load
 associated system libraries as well.
 
-Changing versions of the same compiler
+Changing Versions of the Same Compiler
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use a specific compiler *version*, you must first ensure the compiler's
@@ -325,20 +324,21 @@ a non-default gcc compiler version:
 
 ..
 
-    **note: we recommend the following general guidelines for using the
-    programming environment modules:**
+.. note:: 
+    We recommend the following general guidelines for using the
+    programming environment modules:
 
     -  Do not purge all modules; rather, use the default module environment
        provided at the time of login, and modify it.
-    -  Do not swap moab, torque, or mysql modules after loading a
+    -  Do not swap ``moab``, ``torque``, or ``mysql`` modules after loading a
        programming environment modulefile.
 
 --------------
 
-Compiler wrappers
+Compiler Wrappers
 -----------------
 
-Commodity clusters at the olcf can be accessed via the following wrapper
+Commodity clusters at the OLCF can be accessed via the following wrapper
 programs:
 
 -  ``mpicc`` to invoke the c compiler
@@ -347,17 +347,17 @@ programs:
    fortran compiler
 
 These wrapper programs are cognizant of your currently loaded modules, and will
-ensure that your code links against our openmpi installation.  more information
-about using openmpi at our center can be found in our `software documentation
-<https://www.olcf.ornl.gov/software_package/openmpi/>`__.
+ensure that your code links against our OpenMPI installation.  More information
+about using OpenMPI at our center can be found in our `Best Practices video
+<https://vimeo.com/1037493298?share=copy>`__.
 
-Compiling threaded codes
+Compiling Threaded Codes
 ------------------------
 
 When building threaded codes, compiler-specific flags must be included to ensure
 a proper build.
 
-Openmp
+OpenMP
 ^^^^^^
 
 For pgi, add "-mp" to the build line.
@@ -383,6 +383,22 @@ For intel, add "-qopenmp" to the build line.
 
 For information on *running threaded codes*, please see the :ref:`andes-thread-layout`
 subsection of the :ref:`andes-running-jobs` section in this user guide.
+
+Compiling CUDA Codes
+--------------------
+
+Andes login nodes do not have GPUs, and therefore do not provide `libcuda.so` required for CUDA compilation.
+
+In order to access the appropriate CUDA libraries, it is then required to launch an "interactive compute job" on a compute node:
+
+.. code::
+
+    $ salloc -A abc123 -p gpu -N 4 -t 1:00:00
+    $ module load cuda
+
+.. note::
+
+    Please refer to :ref:`andes-interactive-jobs` for an explanation of the options and arguments in the snippet above.
 
 .. _andes-running-jobs:
 
@@ -461,7 +477,7 @@ Writing Batch Scripts
 Batch scripts, or job submission scripts, are the mechanism by which a user
 configures and submits a job for execution. A batch script is simply a shell
 script that also includes commands to be interpreted by the batch scheduling
-software (e.g. Slurm).
+software (e.g., Slurm).
 
 Batch scripts are submitted to the batch scheduler, where they are then parsed
 for the scheduling configuration options. The batch scheduler then places the
@@ -498,7 +514,7 @@ executable content of the batch job. If any ``#SBATCH`` lines follow executable
 statements, they will be treated as comments only.
 
 The execution section of a script will be interpreted by a shell and can contain
-multiple lines of executables, shell commands, and comments.  when the job's
+multiple lines of executables, shell commands, and comments.  When the job's
 queue wait time is finished, commands within this section will be executed on
 the primary compute node of the job's allocated resources. Under normal
 circumstances, the batch job will exit the queue after the last line of the
@@ -549,7 +565,7 @@ from where the script was submitted.
 
 8: This command will run the date command.
 
-9: This command will run (8) MPI instances of the executable a.out
+9: This command will run (8) MPI instances of the executable "a.out"
 on the compute nodes allocated by the batch system.
 
 
@@ -564,11 +580,12 @@ If successfully submitted, a Slurm job ID will be returned. This ID can be used
 to track the job. It is also helpful in troubleshooting a failed job; make a
 note of the job ID for each of your jobs in case you must contact the `OLCF User
 Assistance Center for support
-<https://www.olcf.ornl.gov/for-users/user-assistance/>`__.
-
-
+<https://www.olcf.ornl.gov/for-users/user-assistance/>`__. To check the status and obtain 
+additional information of all queued jobs, you can use ``squeue`` as described in the Job Monitoring Commands :ref:`subsection <squeue-ref>`.
 
 --------------
+
+.. _andes-interactive-jobs:
 
 Interactive Batch Jobs on Commodity Clusters
 --------------------------------------------
@@ -609,10 +626,10 @@ through a batch script).
 Debugging
 ^^^^^^^^^
 
-A common use of interactive batch is to aid in debugging efforts.  interactive
+A common use of interactive batch is to aid in debugging efforts.  Interactive
 access to compute resources allows the ability to run a process to the point of
 failure; however, unlike a batch job, the process can be restarted after brief
-changes are made without losing the compute resource pool; thus speeding up the
+changes are made without losing the compute resource pool; thus, speeding up the
 debugging effort.
 
 Choosing a Job Size
@@ -784,6 +801,8 @@ the most common and useful of these tools.
 Job Monitoring Commands
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+.. _squeue-ref:
+
 ``squeue``
 """"""""""
 
@@ -919,7 +938,7 @@ your job, it may be useful to control task layout within and across nodes.
 Physical Core Binding
 """""""""""""""""""""
 
-The following will run four copies of a.out, one per CPU, two per node with
+The following will run four copies of "a.out", one per CPU, two per node with
 physical core binding
 
 .. image:: /images/Andes-layout-physical-core-1-per-CPU-SMT1.jpg
@@ -928,7 +947,7 @@ physical core binding
 
 Simultaneous Multithreading Binding
 """""""""""""""""""""""""""""""""""
-The following will run four copies of a.out, one per SMT, two per node
+The following will run four copies of "a.out", one per SMT, two per node
 using a round robin task layout between nodes:
 
 .. image:: /images/Andes-layout-1-per-SMT1-cyclic.jpg
@@ -940,7 +959,7 @@ Thread Layout
 """""""""""""
 **Thread per SMT**
 
-The following will run four copies of a.out. Each task will launch two threads.
+The following will run four copies of "a.out". Each task will launch two threads.
 The ``-c`` flag will provide room for the threads.
 
 .. image:: /images/Andes-layout-thread-per-SMT1.jpg
@@ -977,7 +996,7 @@ Multiple simultaneous sruns can be executed within a batch job by placing each
 
 .. warning::
     The ``--exclusive`` flag must be used to prevent
-    resource sharing. Without the flag each backgrounded srun
+    resource sharing. Without the flag each backgrounded ``srun``
     will likely be placed on the same resources.
 
 .. _batch-queues-on-andes:
@@ -1069,7 +1088,7 @@ allocated to multiple jobs. Because the OLCF charges based on what a job makes
 uses only one core on a node. To simplify the process, users are given a
 multiples of entire nodes through Slurm.
 
-Allocations on Andes are separate from those on Summit and other OLCF resources.
+Allocations on Andes are separate from those on Frontier and other OLCF resources.
 
 Node-Hour Calculation
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1099,7 +1118,7 @@ Tuesday and completes Wednesday, the job's utilization will be recorded
 Thursday. Only batch jobs which write an end record are used to calculate
 utilization. Batch jobs which do not write end records due to system failure or
 other reasons are not used when calculating utilization. Jobs which fail because
-of run-time errors (e.g. the user's application causes a segmentation fault) are
+of run-time errors (e.g., the user's application causes a segmentation fault) are
 counted against the allocation.
 
 Each user may view usage for projects on which they are members from the command
@@ -1173,7 +1192,7 @@ is a command-line debugger useful for traditional debugging and
 investigating code crashes. GDB lets you debug programs written in Ada,
 C, C++, Objective-C, Pascal (and many other languages). 
 
-GDB is available on andes via the ``gdb`` module:
+GDB is available on Andes via the ``gdb`` module:
 
 .. code::
 
@@ -1206,7 +1225,7 @@ The Valgrind tool suite provides a number of debugging and
 profiling tools. The most popular is Memcheck, a memory checking tool
 which can detect many common memory errors such as:
 
-- Touching memory you shouldn’t (eg. overrunning heap block boundaries,
+- Touching memory you shouldn’t (e.g., overrunning heap block boundaries,
   or reading/writing freed memory).
 - Using values before they have been initialized.
 - Incorrect freeing of memory, such as double-freeing heap blocks.
@@ -1220,7 +1239,7 @@ Valgrind is available on Andes via the ``valgrind`` module:
 
 Additional information about Valgrind usage and OLCF-provided builds can
 be found on the `Valgrind Software
-Page <https://www.olcf.ornl.gov/software_package/valgrind/>`__.
+Page <https://docs.olcf.ornl.gov/software/debugging/index.html#valgrind>`__.
 
 
 
@@ -1232,22 +1251,22 @@ Visualization tools
 ParaView
 --------
 
-Information regarding ParaView, and how to run it on both Andes and Summit, has moved
-to the Software Section. Click :doc:`HERE </software/viz_tools/paraview>` to go to the new page.
+Information regarding ParaView, and how to run it on both Andes and Frontier, has moved
+to the Software Section. Click :doc:`HERE </software/viz_tools/paraview>` to go to the page.
 
 VisIt
 -----
 
-Information regarding VisIt, and how to run it on both Andes and Summit, has moved
-to the Software Section. Click :doc:`HERE </software/viz_tools/visit>` to go to the new page.
+Information regarding VisIt, and how to run it on both Andes and Frontier, has moved
+to the Software Section. Click :doc:`HERE </software/viz_tools/visit>` to go to the page.
 
 Remote Visualization using VNC (non-GPU)
 ----------------------------------------
 
-In addition to the instructions below, `Benjamin
-Hernandez <https://www.olcf.ornl.gov/directory/staff-member/benjamin-hernandez/>`__ of the `OLCF
+In addition to the instructions below, Benjamin
+Hernandez, previously of the `OLCF
 Advanced Technologies
-Section <https://www.olcf.ornl.gov/about-olcf/staff-sections/advanced-technologies/>`__
+Section <https://www.olcf.ornl.gov/about-olcf/staff-sections/advanced-technologies/>`__,
 presented a related talk, `GPU Rendering in Rhea and
 Titan <https://www.olcf.ornl.gov/wp-content/uploads/2016/01/GPURenderingRheaTitan-1.pdf>`__,
 during the 2016 OLCF User Meeting.
@@ -1449,7 +1468,7 @@ Step 4 (local system)
 ^^^^^^^^^^^^^^^^^^^^^
 
 Launch the vncviewer. When you launch the vncviewer that you downloaded you will
-need to specify ``localhost:5901``. You will also set a passoword for the initial
+need to specify ``localhost:5901``. You will also set a password for the initial
 connection or enter the created password for subsequent connections.
 
 vmd-vgl.sh (GPU rendering)
@@ -1487,7 +1506,7 @@ vmd-vgl.sh (GPU rendering)
     export DISPLAY=:1
     module load vmd
     vglrun vmd
-    vncserver -kill :1
+    /opt/TurboVNC/bin/vncserver -kill :1
 
 Remote Visualization using Nice DCV (GPU nodes only)
 ----------------------------------------------------
@@ -1532,3 +1551,237 @@ session in first terminal:
 
     $ dcv close-session mySessionName
     $ kill %1
+
+
+.. _andes-containers:
+
+Container Usage
+===============
+
+Apptainer v1.3.4 is provided on Andes for building and running containers.
+To be able to use Apptainer on Andes for building images, the user must have the definition file for the image.
+If you have a Dockerfile rather, it is possible to convert to the Apptainer format.
+Please refer to the `Official Apptainer Docs <https://my.olcf.ornl.gov>`__
+for instructions on writing the Apptainer definition file and more on containers with Apptainer.
+
+.. note::
+    The containers section of this docs will continue to evolve and change over time
+    as we document best practices and more examples for andes.
+    Thus, if you run into issues with container builds/runs that worked previously, please be sure
+    to come back and check the docs to see if anything has changed.
+
+
+Examples for Building and Running Containers
+--------------------------------------------
+
+These examples will walk you through key steps for building and running varying kinds of containers on Andes.
+It will include building and running basic containers, MPI enabled containers and containers with GPU aware applications.
+
+
+Building a Simple Container Image
+---------------------------------
+
+This container image is for summing two vectors, ``A`` and ``B`` for ``C``.
+It installs the compilers needed for building the simple vector addition code, copies the vector_addition.c file
+into the container and compiles the code. Please follow the steps below for building this image.
+
+- Create a directory on home or lustre called ``vector_addition`` and ``cd`` into it.
+- Create a file ``vector_addition.c`` with the following content
+
+ ::
+
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <math.h>
+
+   // Size of array
+   #define N 1048576
+
+   // Main program
+   int main()
+   {
+    // Number of bytes to allocate for N doubles
+    size_t bytes = N*sizeof(double);
+
+    // Allocate memory for arrays A, B, and C on host
+    double *A = (double*)malloc(bytes);
+    double *B = (double*)malloc(bytes);
+    double *C = (double*)malloc(bytes);
+
+
+
+    // Fill host arrays A, B, and C
+    for(int i=0; i<N; i++)
+    {
+        A[i] = 1.0;
+        B[i] = 2.0;
+        C[i] = 0.0;
+    }
+
+    //Summing arrays A and B for C
+    for(int i=0; i<N; i++)
+    {
+            C[i] = A[i] + B[i];
+    }
+
+
+    // Free CPU memory
+    free(A);
+    free(B);
+    free(C);
+
+    printf("\n---------------------------\n");
+    printf("__SUCCESS__\n");
+    printf("---------------------------\n");
+    printf("N                 = %d\n", N);
+    printf("---------------------------\n");
+
+    return 0;
+   }
+
+- Create an Apptainer definition file called ``opensusebase.def`` with the content below
+
+ ::
+
+     Bootstrap: docker
+     From: opensuse/leap:15.4
+
+     %files
+     vector_addition.c /app/vector_addition.c
+
+     %post
+     echo "Installing required packages..."
+     export DEBIAN_FRONTEND=noninteractive
+     zypper install -y wget sudo gzip gcc-c++ gcc-fortran tar make autoconf automake binutils cpp glibc-devel m4 makeinfo zlib-devel gcc-info git glibc-info patch pkg-config # openssh
+     zypper install -y -t pattern devel_basis
+     zypper install -y -t pattern devel_basis
+     zypper install -y -t pattern devel_C_C++
+     zypper install -y -t pattern devel_C_C++
+
+     cd /app && g++ -o vector_addition vector_addition.c
+
+- Now build the image with ``apptainer build opensusebase.sif opensusebase.def``
+- Your image in the Singularity Image Format (SIF) should now be available in your work directory.
+
+Running a Simple Container Through a Batch Job
+-----------------------------------------------
+
+- To run the vector addition code within the container, create the file ``submit.sh`` in the same work directory and with content below.
+  Remember to update the account ID in the submit script.
+
+ ::
+
+     #!/bin/bash
+     #SBATCH -t00:20:00
+     #SBATCH -Astf007
+     #SBATCH -N2
+     #SBATCH -J andes_tests
+     #SBATCH -o logs/%x_%j.out
+     #SBATCH -e logs/%x_%j.out
+
+
+     srun  -N1 -n1 --tasks-per-node 1 apptainer exec opensusebase.sif ./vector_addition
+
+- Submit the job with ``sbatch submit.sh``. This should produce an output that looks like
+
+::
+
+   __SUCCESS__
+  N                 = 1048576
+
+
+
+Running an MPI Application within a Container
+---------------------------------------------
+
+Openmpi is installed on Andes for running MPI applications.
+As a result, we install openmpi 4.0.4 within the container for this MPI example.
+Follow the steps below to build and run this container.
+
+- Create a new directory ``mpiexample`` and ``cd`` into it.
+
+- Create the file ``hello_world.c`` with the content below
+
+ ::
+
+    #include <stdio.h>
+    #include <mpi.h>
+
+    int main (int argc, char *argv[])
+    {
+    int rank, size;
+    MPI_Comm comm;
+
+    comm = MPI_COMM_WORLD;
+    MPI_Init (&argc, &argv);
+    MPI_Comm_rank (comm, &rank);
+    MPI_Comm_size (comm, &size);
+
+    printf("Hello from rank %d\n", rank);
+
+    MPI_Barrier(comm);
+    MPI_Finalize();
+    }
+
+- Create an Apptainer definition file ``mpiexample.def`` with the content below
+
+ ::
+
+     Bootstrap: localimage
+     From: /lustre/orion/stf016/world-shared/containers/rockybaseopenmpi404.sif
+
+     %files
+     hello_world.c /app/hello_world.c
+
+     %post
+     export OMPI_DIR=/opt/ompi
+     export PATH="$OMPI_DIR/bin:$PATH"
+     export LD_LIBRARY_PATH="$OMPI_DIR/lib:$LD_LIBRARY_PATH"
+     cd /app && mpicc -o hello_world hello_world.c
+
+- Now build the image with ``apptainer build mpiexample.sif mpiexample.def``
+
+
+- Create the batch script ``submit.sh`` for running the container with the following content. Remember to update the account
+
+ ::
+
+        #!/bin/bash
+        #SBATCH -t01:20:00
+        #SBATCH -Astf007
+        #SBATCH -N2
+        #SBATCH -J andes_mpiexample
+        #SBATCH -e logs/%x_%j.out
+        #SBATCH -o logs/%x_%j.out
+
+
+
+        export APPTAINER=apptainer
+
+        module load openmpi
+        export MPICH_GPU_SUPPORT_ENABLED=1
+        export APPTAINERENV_LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$OLCF_OPENMPI_ROOT"
+        export MPICH_DIR="/sw/andes/spack-envs/base/opt/linux-rhel8-x86_64/gcc-9.3.0/openmpi-4.0.4-skxqfeiocc5jtuw3y6dwtnxzzqjp5ffs"
+        export APPTAINER_CONTAINLIBS="/usr/lib64/libjson-c.so.4,/usr/lib64/libnl-3.so.200"
+        export BINDS=/usr/share/libdrm,/usr/lib64/slurm/libslurm_pmi.so,/lib64/libpmi2.so.0,/lib64/libpmi.so.0,/var/spool/slurm,/sw/andes/gcc/9.3.0/lib/../lib64/libatomic.so.1,/opt/mellanox/hcoll/lib/libhcoll.so.1,/sw/andes/spack-envs/base/opt/linux-rhel8-x86_64/gcc-9.3.0/libfabric-1.8.0-c75evdt25adk7fzoyox4ttc2msi72unv/lib/libfabric.so.1,/opt/mellanox/hcoll/lib/libocoms.so.0,${PWD},$MPICH_DIR
+
+
+        echo "TEST: (bind mode) MPI helloworld test"
+
+        srun  -N2 -n6 --tasks-per-node 3 $APPTAINER exec --bind $BINDS   --workdir `pwd`  mpiexample.sif  /app/hello_world
+
+- Submit the job with ``sbatch submit.sh``. This should produce an output that looks like
+
+ ::
+
+     Hello from rank 2
+     Hello from rank 0
+     Hello from rank 1
+     Hello from rank 3
+     Hello from rank 5
+     Hello from rank 4
+
+
+.. note::
+   We have verified that running an MPI application with MPICH 3.4.2 installed within the container
+   works well on Andes. Users are welcomed to try out other MPI distributions.
